@@ -10,6 +10,11 @@ class CoffeeMachine {
   #possibleBeverages = {};
   #parallellyDispensingOutletCount = 0;
 
+  /**
+   * @param {Number} outletCount Number of outlet available in the machine
+   * @param {Object} ingredients An object having ingredient name as key and available quanitity as value 
+   * @param {Object<ingredients>} possibleBeverages An object having beverage name as key with required ingredients as value
+   */
   constructor (outletCount, ingredients, possibleBeverages) {
     this.#availabelOutletCount = outletCount;
     this.#ingredients = ingredients;
@@ -27,35 +32,40 @@ class CoffeeMachine {
     return delay(TIME_TO_REFILL_INGREDIENT).then(() => Promise.resolve());
   }
 
-  dispenseBeverage (beverageName) {
-    const beverageDetails = this.#possibleBeverages[beverageName],
+  dispenseBeverage (beverageToBeDispensed) {
+    const beverageDetails = this.#possibleBeverages[beverageToBeDispensed],
       areAllOutletsDispensing = this.#availabelOutletCount <= this.#parallellyDispensingOutletCount;
 
+    // If all of the available outlets are already dispensing then return error
     if (areAllOutletsDispensing) {
       return Promise.reject(new Error(`Can't dispense more than ${this.#availabelOutletCount} beverages at a time`));
     }
 
+    // Block the current outlet for future despense operations
     this.#parallellyDispensingOutletCount += 1;
     
+    // If invalid beverage is passed then return error
     if (!beverageDetails) {
-      return Promise.reject(new Error(`Dispensing ${beverageName} is not supported.`));
+      return Promise.reject(new Error(`Dispensing ${beverageToBeDispensed} is not supported.`));
     }
 
     // Simulating preparing of beverage by waiting for 20 milisecond
     return delay(TIME_TO_PREPARE_BEVERAGE).then(() => {
       for (const ingredientName in beverageDetails) {
         const availableIngredient = this.#ingredients[ingredientName],
-          requiredIngredient = beverageDetails[ingredientName];
+          requiredIngredient = beverageDetails[ingredientName],
+          notEnoughIngredientAvailable = !availableIngredient || availableIngredient < requiredIngredient;
 
-        if (!availableIngredient || availableIngredient < requiredIngredient) {
-          return Promise.reject(new Error(`Dispensing ${beverageName} is not possible because ${ingredientName} is not available`));
+        if (notEnoughIngredientAvailable) {
+          return Promise.reject(new Error(`Dispensing ${beverageToBeDispensed} is not possible because ${ingredientName} is not available`));
         }
 
         this.reduceIngredient(ingredientName, requiredIngredient);
 
+        // Release the current outlet for future despense operations
         this.#parallellyDispensingOutletCount -= 1;
 
-        return Promise.resolve(`${beverageName} is prepared`);
+        return Promise.resolve(`${beverageToBeDispensed} is prepared`);
       }
     });
   }
