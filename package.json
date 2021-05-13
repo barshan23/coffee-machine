@@ -1,0 +1,24 @@
+{
+  "name": "coffee-machine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha --reporter spec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/barshan23/coffee-machine.git"
+  },
+  "author": "Avishek Saha (barshan23@gmail.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/barshan23/coffee-machine/issues"
+  },
+  "homepage": "https://github.com/barshan23/coffee-machine#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0"
+  }
+}
